@@ -31,14 +31,38 @@ if uploaded_file is None:
 # -------------------------------------------------
 def load_data(file):
     try:
-        df = pd.read_excel(file, engine="openpyxl")
-    except ImportError:
-        st.error("❌ openpyxl is not installed. Please check requirements.txt")
+        # Case 1: CSV file
+        if file.name.lower().endswith(".csv"):
+            df = pd.read_csv(file)
+
+        # Case 2: Old Excel (.xls)
+        elif file.name.lower().endswith(".xls"):
+            df = pd.read_excel(file, engine="xlrd")
+
+        # Case 3: Modern Excel (.xlsx)
+        elif file.name.lower().endswith(".xlsx"):
+            df = pd.read_excel(file, engine="openpyxl")
+
+        else:
+            st.error("❌ Unsupported file format. Please upload CSV or Excel.")
+            st.stop()
+
+    except Exception as e:
+        st.error("❌ Unable to read the uploaded file.")
+        st.error("Possible reasons:")
+        st.markdown("""
+        - File is corrupted  
+        - File is not a real Excel file  
+        - CSV renamed as .xlsx  
+        - Google Sheet exported incorrectly  
+        """)
+        st.code(str(e))
         st.stop()
-        
+
     df = df.drop_duplicates()
     df.columns = df.columns.str.strip()
     return df
+
 
 df = load_data(uploaded_file)
 
