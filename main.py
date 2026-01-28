@@ -30,6 +30,7 @@ if uploaded_file is None:
 # Load & Clean Data
 # -------------------------------------------------
 def load_data(file):
+    file.seek(0)
     try:
         # Case 1: CSV file
         if file.name.lower().endswith(".csv"):
