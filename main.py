@@ -30,7 +30,12 @@ if uploaded_file is None:
 # Load & Clean Data
 # -------------------------------------------------
 def load_data(file):
-    df = pd.read_excel(file, engine="openpyxl")
+    try:
+        df = pd.read_excel(file, engine="openpyxl")
+    except ImportError:
+        st.error("❌ openpyxl is not installed. Please check requirements.txt")
+        st.stop()
+        
     df = df.drop_duplicates()
     df.columns = df.columns.str.strip()
     return df
